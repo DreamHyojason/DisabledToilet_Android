@@ -88,7 +88,7 @@ class NearViewModel: ViewModel() {
      * 현재 필터링 된 화장실 리스트 기반으로 레이블 리스트 생성
      * 지도 초기화 된 후 사용해야 함
      */
-    fun makeToiletLabelList(kakaoMap: KakaoMap){
+    suspend fun makeToiletLabelList(kakaoMap: KakaoMap){
         Log.d("test log", "makeToiletLabelList")
         // 카카오맵 객체가 필요하기 때문에 지도 초기화 된 후 사용
         Log.d("test log", "makeToiletLabelList: kakaoMap initialized")
@@ -118,7 +118,7 @@ class NearViewModel: ViewModel() {
     /**
      * 현재 카메라 위치 기반으로 20km 이내의 화장실 레이블 리스트 받아오기
      */
-    fun getToiletLabelListInCamera(kakaoMap: KakaoMap): List<Label>{
+    suspend fun getToiletLabelListInCamera(kakaoMap: KakaoMap): List<Label>{
         val labelBuilder = LabelBuilder(kakaoMap)
         val toiletListInCamera = toiletListGenerator.makeToiletListInCamera(
             cameraPosition.value!!,
@@ -179,7 +179,7 @@ class NearViewModel: ViewModel() {
     /**
      * ToiletModel을 받아서 label 반환
      */
-    fun makeLabel(toilet: ToiletModel, kakaoMap: KakaoMap): Label{
+    suspend fun makeLabel(toilet: ToiletModel, kakaoMap: KakaoMap): Label{
         val labelBuilder = LabelBuilder(kakaoMap)
         return labelBuilder.makeToiletLabel(toilet)!!
     }

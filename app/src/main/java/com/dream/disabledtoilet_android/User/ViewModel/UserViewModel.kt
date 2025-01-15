@@ -7,6 +7,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import com.dream.disabledtoilet_android.User.UserRepository
 import android.util.Log
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class UserViewModel(application: Application) : AndroidViewModel(application) {
     private val repository = UserRepository()
@@ -22,10 +25,19 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun fetchUserByEmail(email: String) {
-        repository.loadUser(email) { user ->
+    suspend fun fetchUserByEmail(email: String): User? {
+        return withContext(viewModelScope.coroutineContext) {
+            val user = repository.loadUser(email)
             Log.d("UserViewModel", "fetchUserByEmail 반환값: $user")
             currentUser.value = user
+            Log.d("UserViewModel", "currentUser.value: ${currentUser.value}")
+            user // 반환값
+        }
+    }
+
+    fun observePostLikesUser(userId :String){
+        repository.observeUserLikes(userId){ likes ->
+            currentUser.value?.likedToilets = likes
         }
     }
 
@@ -36,6 +48,10 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
 
     fun removeLikeUser(toiletId : Int, userId : String){
         repository.removeLike(toiletId, userId)
+    }
+
+    fun isLikedUser (toiletId : String) : Boolean{
+        return currentUser.value?.likedToilets?.contains(toiletId) == true
     }
 
     override fun onCleared() {

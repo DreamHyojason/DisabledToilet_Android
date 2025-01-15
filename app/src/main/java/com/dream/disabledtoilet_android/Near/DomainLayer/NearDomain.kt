@@ -10,7 +10,7 @@ class NearDomain {
      *      ToiletModel 리스트 기반으로 Label 리스트 생성
      *      KakaoMap 객체 필요
      */
-    fun makeToiletLabelList(toiletList: List<ToiletModel>, kakaoMap: KakaoMap): List<Label>{
+    suspend fun makeToiletLabelList(toiletList: List<ToiletModel>, kakaoMap: KakaoMap): List<Label>{
         val toiletLabelBuilder = LabelBuilder(kakaoMap)
         return toiletLabelBuilder.makeToiletLabelList(toiletList)
     }

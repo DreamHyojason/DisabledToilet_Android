@@ -16,11 +16,13 @@ import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.dream.disabledtoilet_android.R
 import com.dream.disabledtoilet_android.ToiletSearch.ToiletData
 import com.dream.disabledtoilet_android.User.ToiletPostViewModel
 import com.dream.disabledtoilet_android.User.ViewModel.UserViewModel
 import com.dream.disabledtoilet_android.databinding.FragmentDetailOptionBinding
+import kotlinx.coroutines.launch
 
 class DetailOptionFragment : Fragment() {
 
@@ -42,10 +44,25 @@ class DetailOptionFragment : Fragment() {
         userViewModel = ViewModelProvider(this).get(UserViewModel::class.java)
 
         val email = ToiletData.currentUser
-        Log.d("test" , " onCreate email: ${email}")
-        if(email != null){
-            userViewModel.fetchUserByEmail(email)
-            Log.d("test", "uesrViewmodel : ${userViewModel.currentUser.value}")
+        Log.d("test", "onCreate email: $email")
+        if (email != null) {
+            userViewModel.observePostLikesUser(email)
+
+            lifecycleScope.launch {
+                // 비동기적으로 사용자 정보를 가져옵니다.
+                userViewModel.fetchUserByEmail(email)
+                Log.d("test1", "user : ${userViewModel.currentUser.value}")
+
+                // 사용자 정보가 로드된 후 setupSaveButton 호출
+                currentToilet?.let { toilet ->
+                    setupSaveButton(toilet)
+                }
+            }
+        }
+
+        // currentUser를 observe하여 값이 업데이트될 때마다 로그를 찍습니다.
+        userViewModel.currentUser.observe(this) { user ->
+            Log.d("test1", "user : $user")
         }
 
         // 전달받은 화장실 데이터
@@ -61,7 +78,7 @@ class DetailOptionFragment : Fragment() {
 
         currentToilet?.let { toilet ->
             setupUI(toilet)
-            setupSaveButton(toilet)
+//            setupSaveButton(toilet)
         }
 
         return binding.root
@@ -109,6 +126,10 @@ class DetailOptionFragment : Fragment() {
     }
 
     private fun setupSaveButton(toilet: ToiletModel) {
+
+        Log.d("test4", "first post:  ${postViewModel.toiletLikes.value}")
+        Log.d("test4", "first user:  ${userViewModel.currentUser?.value?.likedToilets}")
+
         val saveButton : LinearLayout = binding.saveBtn3
         val saveIcon = binding.iconToggle
         val saveTxt = binding.toiletSaveCount
@@ -125,32 +146,41 @@ class DetailOptionFragment : Fragment() {
         }
 
         saveButton.setOnClickListener {
-            Log.d("test", "클릭1  userViewModel.currentUser : ${userViewModel.currentUser}")
-            Log.d("test", "클릭1  isLiked : ${postViewModel.toiletLikes}")
-
-            Log.d("test", "userId : ${userViewModel.currentUser.value}")
-
-
             val userId = userViewModel.currentUser.value?.email ?: return@setOnClickListener
             val isLiked = postViewModel.isLikedByUser(userId)
-            Log.d("test", "클릭  userViewModel.currentUser : ${userViewModel.currentUser}")
-            Log.d("test", "클릭  isLiked : ${postViewModel.toiletLikes}")
+            val isLiked2 = userViewModel.isLikedUser(toilet.number.toString())
 
-            if(isLiked){
+            Log.d("test4", "post:  ${postViewModel.toiletLikes.value}")
+            Log.d("test4", "user:  ${userViewModel.currentUser?.value?.likedToilets}")
+            Log.d("test4", "isLiked1:  ${isLiked}")
+            Log.d("test4", "isLiked2:  ${isLiked2}")
+
+
+            if(isLiked2){
                 postViewModel.removeLike(toilet.number, userId)
+                userViewModel.removeLikeUser(toilet.number, userId)
+                Log.d("test3", "user 삭제:  ${userViewModel.currentUser.value?.likedToilets}")
+                
             }else{
                 postViewModel.addLike(toilet.number, userId)
+                userViewModel.addLikeUser(toilet.number, userId)
+                Log.d("test3", "user 추가:  ${userViewModel.currentUser.value?.likedToilets}")
+
             }
+
+            Log.d("test4", "after post:  ${postViewModel.toiletLikes.value}")
+            Log.d("test4", "after user:  ${userViewModel.currentUser?.value?.likedToilets}")
+
         }
     }
 
     private fun updateLikeButtonIcon(likeButton: ImageView, userId: String, toilet: ToiletModel?){
-        Log.d("test", "post :  ${postViewModel.toiletLikes.value}")
-//        val isLiked = postViewModel.isLikedByUser(userId)
-        val isLiked = userViewModel.currentUser.value?.likedToilets?.contains(toilet?.number.toString())
-        Log.d("test", "user :  ${userViewModel.currentUser.value?.likedToilets}")
+        val isLiked = userViewModel.isLikedUser(toilet?.number.toString())
 
-        if(isLiked == true){
+        Log.d("test4", "isLiked UPDATEBUTTON 1 : ${userViewModel.currentUser.value}")
+        Log.d("test4", "isLiked UPDATEBUTTON 2 :  ${isLiked}")
+
+        if(isLiked){
             likeButton.setImageResource(R.drawable.saved_star_icon)
         }else{
             likeButton.setImageResource(R.drawable.save_icon)

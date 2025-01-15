@@ -24,12 +24,11 @@ import com.kakao.vectormap.label.Transition
 class LabelBuilder(val kakaoMap: KakaoMap) {
     private var toiletLabelMap = mutableMapOf<Label, ToiletModel>()
     private val repository = UserRepository()
-    val userToilets = MutableLiveData<User?>()
 
     /**
      *      ToiletModel 리스트를 기반으로 Label 리스트 생성
      */
-    fun makeToiletLabelList(toiletList: List<ToiletModel>): List<Label> {
+    suspend fun makeToiletLabelList(toiletList: List<ToiletModel>): List<Label> {
         val toiletLabelList = mutableListOf<Label>()
         if(toiletList.isNotEmpty()){
             for (i in toiletList.indices){
@@ -59,20 +58,17 @@ class LabelBuilder(val kakaoMap: KakaoMap) {
     /**
      *      맵에 화장실 레이블 생성
      */
-    fun makeToiletLabel(toiletModel: ToiletModel): Label?{
-
-        ToiletData.currentUser?.let {
-            repository.loadUser(it) { user ->
-                userToilets.value = user
-            }
+    suspend fun makeToiletLabel(toiletModel: ToiletModel): Label? {
+        // 사용자 정보를 비동기적으로 가져오기
+        val user = ToiletData.currentUser?.let {
+            repository.loadUser(it)
         }
 
         // 좋아요 여부 확인
-//        val isLiked = currentUser..contains(toiletModel.number)
-        val isLiked = userToilets.value?.likedToilets?.contains(toiletModel.number.toString())
+        val isLiked = user?.likedToilets?.contains(toiletModel.number.toString())
 
         // 좋아요 스타일 설정
-        val styles = if(isLiked == true) {
+        val styles = if (isLiked == true) {
             kakaoMap.labelManager?.addLabelStyles(
                 LabelStyles.from(
                     LabelStyle.from(R.drawable.saved_pin1).setZoomLevel(10),
@@ -81,15 +77,15 @@ class LabelBuilder(val kakaoMap: KakaoMap) {
                     LabelStyle.from(R.drawable.saved_pin4).setZoomLevel(19)
                 )
             )
-        }else{
-                kakaoMap.labelManager?.addLabelStyles(
-                    LabelStyles.from(
-                        LabelStyle.from(R.drawable.map_pin1).setZoomLevel(10),
-                        LabelStyle.from(R.drawable.map_pin2).setZoomLevel(13),
-                        LabelStyle.from(R.drawable.map_pin3).setZoomLevel(16),
-                        LabelStyle.from(R.drawable.map_pin4).setZoomLevel(19)
-                    )
+        } else {
+            kakaoMap.labelManager?.addLabelStyles(
+                LabelStyles.from(
+                    LabelStyle.from(R.drawable.map_pin1).setZoomLevel(10),
+                    LabelStyle.from(R.drawable.map_pin2).setZoomLevel(13),
+                    LabelStyle.from(R.drawable.map_pin3).setZoomLevel(16),
+                    LabelStyle.from(R.drawable.map_pin4).setZoomLevel(19)
                 )
+            )
         }
 
         val position = LatLng.from(toiletModel.wgs84_latitude, toiletModel.wgs84_longitude)
@@ -101,6 +97,7 @@ class LabelBuilder(val kakaoMap: KakaoMap) {
         val label = layer?.addLabel(options)
         return label
     }
+
     /**
      *      toiletLabelMap 초기화
      */

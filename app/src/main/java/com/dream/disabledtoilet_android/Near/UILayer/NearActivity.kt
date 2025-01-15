@@ -78,9 +78,10 @@ class NearActivity : AppCompatActivity() {
         postViewModel = ViewModelProvider(this).get(ToiletPostViewModel::class.java)
 
         val email = ToiletData.currentUser
-        if(email != null){
-            userViewModel.fetchUserByEmail(email)
-            Log.d("test", "near userview : ${userViewModel.currentUser.value}")
+        if (email != null) {
+            lifecycleScope.launch {
+                userViewModel.fetchUserByEmail(email)
+            }
         }
 
         // 임시
@@ -160,12 +161,15 @@ class NearActivity : AppCompatActivity() {
                 }
 
                 // 뷰모델의 카메라 포지션 값 변동 시
-                viewModel.cameraPosition.observe(this){ cameraPosition ->
-                    // 카메라 포지션 기준 20kM 내의 화장실 레이블 받아서
-                    val labelsInCamera = viewModel.getToiletLabelListInCamera(kakaoMap)
-                    // 화장실 레이블 지도에 표시
-                    showLabelList(labelsInCamera)
+                viewModel.cameraPosition.observe(this) { cameraPosition ->
+                    lifecycleScope.launch {
+                        // 카메라 포지션 기준 20kM 내의 화장실 레이블 받아서
+                        val labelsInCamera = viewModel.getToiletLabelListInCamera(kakaoMap)
+                        // 화장실 레이블 지도에 표시
+                        showLabelList(labelsInCamera)
+                    }
                 }
+
 
                 // 사용자 위치 변경 관측
                 viewModel.myLocation.observe(this){ myLocation ->
@@ -363,6 +367,8 @@ class NearActivity : AppCompatActivity() {
         val saveicon2: ImageView = bottomSheetView.findViewById(R.id.save_icon2)
 
         savebtn1.setOnClickListener {
+            Log.d("test" , " 삭제 : ${postViewModel.toiletLikes.value}")
+
             val isLiked = postViewModel.isLikedByUser(userId)
 
             if(isLiked){
@@ -370,7 +376,6 @@ class NearActivity : AppCompatActivity() {
                 userViewModel.removeLikeUser(toiletId,userId)
                 Log.d("test" , " 삭제 : ${postViewModel.toiletLikes.value}")
             }else{
-                Log.d("test ", "saveicon1 추가")
                 postViewModel.addLike(toiletId, userId)
                 userViewModel.addLikeUser(toiletId,userId)
                 Log.d("test" , " 추가 : ${postViewModel.toiletLikes.value}")
@@ -384,7 +389,6 @@ class NearActivity : AppCompatActivity() {
                 userViewModel.removeLikeUser(toiletId,userId)
                 Log.d("test" , " 삭제 : ${postViewModel.toiletLikes.value}")
             }else{
-                Log.d("test ", "saveicon1 추가")
                 postViewModel.addLike(toiletId, userId)
                 userViewModel.addLikeUser(toiletId,userId)
                 Log.d("test" , " 추가 : ${postViewModel.toiletLikes.value}")
@@ -411,7 +415,7 @@ class NearActivity : AppCompatActivity() {
     }
 
     // Intent 데이터를 처리하는 함수
-    private fun handleIntent(kakaoMap: KakaoMap) {
+    private suspend fun handleIntent(kakaoMap: KakaoMap) {
         val rootActivity = intent.getStringExtra("rootActivity")
         when (rootActivity) {
             // 장소 검색에서 넘어온 경우
