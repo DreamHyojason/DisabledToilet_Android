@@ -188,9 +188,9 @@ class NearActivity : AppCompatActivity() {
                     repeatOnLifecycle(Lifecycle.State.STARTED){
                         viewModel.cachedToiletStateFlow.collect{
                             //레이블 다시 깔기
-                            for(toilet in ToiletData.cachedToiletList!!){
-                                   handleIntent(kakaoMap)
-                            }
+                            val labelsInCamera = viewModel.getToiletLabelListInCamera(kakaoMap)
+                            // 화장실 레이블 지도에 표시
+                            showLabelList(labelsInCamera)
                         }
                     }
                 }
