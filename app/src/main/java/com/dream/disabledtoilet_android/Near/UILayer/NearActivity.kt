@@ -476,7 +476,12 @@ class NearActivity : AppCompatActivity() {
             }
 
             else -> {
+                // 현재 위치로 카메라 이동
                 moveCameraToUser()
+                // 현재 위치를 카메라 값을 세팅
+                kakaoMap.getCameraPosition { cameraPosition ->
+                    viewModel.setCurrentCameraPosition(cameraPosition)
+                }
             }
         }
     }

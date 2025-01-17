@@ -134,14 +134,19 @@ class NearViewModel: ViewModel() {
      */
     fun getToiletLabelListInCamera(kakaoMap: KakaoMap): List<Label>{
         val labelBuilder = LabelBuilder(kakaoMap)
-        val toiletListInCamera = toiletListGenerator.makeToiletListInCamera(
-            cameraPosition.value!!,
-            mapState.value!!.filteredToiletList
-        )
-        val resultList = labelBuilder.makeToiletLabelList(toiletListInCamera)
-        // 레이블 리스트 생성 후, 맵도 받아오기
-        _mapState.value = mapState.value!!.copy(toiletLabelMap = labelBuilder.getToiletLabelMap())
-        return resultList
+        if (cameraPosition.value != null){
+            val toiletListInCamera = toiletListGenerator.makeToiletListInCamera(
+                cameraPosition.value!!,
+                mapState.value!!.filteredToiletList
+            )
+            val resultList = labelBuilder.makeToiletLabelList(toiletListInCamera)
+            // 레이블 리스트 생성 후, 맵도 받아오기
+            _mapState.value = mapState.value!!.copy(toiletLabelMap = labelBuilder.getToiletLabelMap())
+            return resultList
+        }
+        else{
+            return emptyList()
+        }
     }
     /**
      * 현재 카메라 위치 받기
