@@ -66,7 +66,8 @@ class LabelBuilder(val kakaoMap: KakaoMap) {
 //
 //        // 좋아요 여부 확인
 //        val isLiked = user?.likedToilets?.contains(toiletModel.number.toString())
-        val isLiked = ToiletData.cachedToiletList.contains(toiletModel)
+//        val isLiked = ToiletData.cachedToiletList.contains(toiletModel)
+        val isLiked = toiletModel.save.contains(ToiletData.currentUser)
 
         // 좋아요 스타일 설정
         val styles = if (isLiked == true) {

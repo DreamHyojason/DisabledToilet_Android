@@ -183,7 +183,7 @@ class NearActivity : AppCompatActivity() {
                     updateMyLocationLabel(myLocation)
                 }
 
-                //맵뷰 초기화 관측시
+                // cachedToilet 변경 관측 시
                 lifecycleScope.launch {
                     repeatOnLifecycle(Lifecycle.State.STARTED){
                         viewModel.cachedToiletStateFlow.collect{
