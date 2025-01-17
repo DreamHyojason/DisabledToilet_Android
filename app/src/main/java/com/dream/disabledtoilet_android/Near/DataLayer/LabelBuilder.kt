@@ -28,7 +28,7 @@ class LabelBuilder(val kakaoMap: KakaoMap) {
     /**
      *      ToiletModel 리스트를 기반으로 Label 리스트 생성
      */
-    suspend fun makeToiletLabelList(toiletList: List<ToiletModel>): List<Label> {
+    fun makeToiletLabelList(toiletList: List<ToiletModel>): List<Label> {
         val toiletLabelList = mutableListOf<Label>()
         if(toiletList.isNotEmpty()){
             for (i in toiletList.indices){
@@ -58,14 +58,15 @@ class LabelBuilder(val kakaoMap: KakaoMap) {
     /**
      *      맵에 화장실 레이블 생성
      */
-    suspend fun makeToiletLabel(toiletModel: ToiletModel): Label? {
-        // 사용자 정보를 비동기적으로 가져오기
-        val user = ToiletData.currentUser?.let {
-            repository.loadUser(it)
-        }
-
-        // 좋아요 여부 확인
-        val isLiked = user?.likedToilets?.contains(toiletModel.number.toString())
+    fun makeToiletLabel(toiletModel: ToiletModel): Label? {
+//        // 사용자 정보를 비동기적으로 가져오기
+//        val user = ToiletData.currentUser?.let {
+//            repository.loadUser(it)
+//        }
+//
+//        // 좋아요 여부 확인
+//        val isLiked = user?.likedToilets?.contains(toiletModel.number.toString())
+        val isLiked = ToiletData.cachedToiletList.contains(toiletModel)
 
         // 좋아요 스타일 설정
         val styles = if (isLiked == true) {

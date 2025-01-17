@@ -48,12 +48,6 @@ class ToiletFilterSearchActivity : AppCompatActivity() {
     val toiletRepository = ToiletRepository()
     lateinit var toiletListViewAdapter: ToiletListViewAdapter
     val loadingDialog = LoadingDialog()
-
-    /**
-     * ToiletData 한번 필터링한 리스트
-     */
-    lateinit var filterSearchDialog: FilterSearchDialog
-
     /**
      * 필터 적용 다이얼로그에서 사용할 뷰모델
      */
@@ -244,7 +238,7 @@ class ToiletFilterSearchActivity : AppCompatActivity() {
      */
     private fun showFilter() {
         // 필터 다이얼로그, 리스너 세팅
-        filterSearchDialog = FilterSearchDialog(
+        val filterSearchDialog: FilterSearchDialog = FilterSearchDialog(
             viewModel.filterDialogStatus.value.filterStatus,
             object : FilterApplyListener {
                 override fun onApplyFilterListener(filterStatus: FilterStatus) {

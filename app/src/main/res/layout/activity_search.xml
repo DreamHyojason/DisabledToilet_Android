@@ -28,8 +28,7 @@
             android:background="@android:color/transparent"
             android:src="@drawable/back_button"
             android:scaleType="fitCenter"
-            android:contentDescription="Back Button"
-            />
+            android:contentDescription="Back Button"/>
 
     </FrameLayout>
 

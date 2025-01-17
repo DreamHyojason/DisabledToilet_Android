@@ -4,6 +4,7 @@ import User
 import androidx.lifecycle.MutableLiveData
 import com.google.firebase.firestore.FirebaseFirestore
 import android.util.Log
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.tasks.await
 
 class UserRepository {
@@ -64,7 +65,7 @@ class UserRepository {
             val snapshot = transaction.get(postRef)
             val likes = snapshot.get("likedToilets") as? MutableList<String> ?: mutableListOf()
 
-            if(likes.contains(toiletId.toString())){
+            if (likes.contains(toiletId.toString())) {
                 likes.add(toiletId.toString())
                 transaction.update(postRef, "likedToilets", likes)
             }
@@ -80,7 +81,7 @@ class UserRepository {
             val snapshot = transaction.get(postRef)
             val likes = snapshot.get("likedToilets") as? MutableList<String> ?: mutableListOf()
 
-            if(likes.contains(toiletId.toString())){
+            if (likes.contains(toiletId.toString())) {
                 likes.remove(toiletId.toString())
                 transaction.update(postRef, "likedToilets", likes)
             }
@@ -100,4 +101,5 @@ class UserRepository {
                 }
             }
     }
+
 }

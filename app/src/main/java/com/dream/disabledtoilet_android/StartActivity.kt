@@ -34,15 +34,11 @@ class StartActivity : AppCompatActivity() {
 
         CoroutineScope(Dispatchers.IO).launch {
             try {
-
-                Log.d("test ", "11")
                 // 초기화 작업 (예: 데이터 로드)
                 val initResult = initializeApp()
-                Log.d("test ", "22")
 
                 // GoogleHelper 초기화
                 googleHelper.initializeGoogleSignIn() // 구글 로그인 초기화
-                Log.d("test ", "33")
 
                 withContext(Dispatchers.Main) {
                     loadingDialog.dismiss() // 로딩 다이얼로그 종료

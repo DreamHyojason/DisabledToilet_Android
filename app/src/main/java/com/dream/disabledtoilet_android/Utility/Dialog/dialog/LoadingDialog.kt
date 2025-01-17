@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.LinearInterpolator
 import androidx.fragment.app.DialogFragment
 import com.dream.disabledtoilet_android.databinding.LoadingDialogBinding
 
@@ -30,11 +31,11 @@ class LoadingDialog: DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val animator = ObjectAnimator.ofFloat(binding.loadingCircle, "translationY", 0f, -50f, 0f)
-
-        animator.duration = 1000
-        animator.repeatCount = ObjectAnimator.INFINITE
-        animator.repeatMode = ObjectAnimator.REVERSE
+        // 뱅글뱅글 회전 애니메이션 설정
+        val animator = ObjectAnimator.ofFloat(binding.loadingCircle, "rotation", 0f, 360f)
+        animator.duration = 2000 // 1초 동안 한 바퀴 회전
+        animator.repeatCount = ObjectAnimator.INFINITE // 무한 반복
+        animator.interpolator = LinearInterpolator() // 일정한 속도로 회전
         animator.start()
     }
 }

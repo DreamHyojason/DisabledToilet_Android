@@ -1,6 +1,7 @@
 package com.dream.disabledtoilet_android.Near.UILayer.ViewModel
 
 import ToiletModel
+import android.annotation.SuppressLint
 import android.location.Location
 import android.os.Build
 import android.util.Log
@@ -14,10 +15,14 @@ import com.dream.disabledtoilet_android.Near.DomainLayer.NearDomain
 import com.dream.disabledtoilet_android.ToiletSearch.SearchFilter.ViewModel.FilterViewModel
 import com.dream.disabledtoilet_android.ToiletSearch.ToiletData
 import com.dream.disabledtoilet_android.ToiletSearch.ToiletRepository
+import com.dream.disabledtoilet_android.ToiletSearch.ViewModel.FilterDialogStatus
+import com.dream.disabledtoilet_android.ToiletSearch.ViewModel.ToiletListState
 import com.kakao.vectormap.KakaoMap
 import com.kakao.vectormap.LatLng
 import com.kakao.vectormap.camera.CameraPosition
 import com.kakao.vectormap.label.Label
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 class NearViewModel: ViewModel() {
     val nearDomain = NearDomain()
@@ -53,7 +58,14 @@ class NearViewModel: ViewModel() {
     // 현재 선택한 화장실
     private val _currentToilet = MutableLiveData<ToiletModel?>()
     val currentToilet : LiveData<ToiletModel?> get() = _currentToilet
-    
+
+    // 필터 다이얼로그 상태
+    private val _filterDialogStatus = MutableLiveData(FilterDialogStatus())
+    val filterDialogStatus : LiveData<FilterDialogStatus> get() = _filterDialogStatus
+
+    private val _cachedToiletStateFlow = MutableStateFlow<List<ToiletModel>>(ToiletData.cachedToiletList)
+    val cachedToiletStateFlow : MutableStateFlow<List<ToiletModel>> get() = _cachedToiletStateFlow
+
     init {
         val mapStatus = MapStatus(
             ToiletData.cachedToiletList!!,
@@ -68,6 +80,8 @@ class NearViewModel: ViewModel() {
         )
         _mapState.value = mapStatus
         _uiState.value = uiStatus
+
+        _filterDialogStatus.value = FilterDialogStatus()
     }
     /**
      * 내 위치 세팅
@@ -88,7 +102,7 @@ class NearViewModel: ViewModel() {
      * 현재 필터링 된 화장실 리스트 기반으로 레이블 리스트 생성
      * 지도 초기화 된 후 사용해야 함
      */
-    suspend fun makeToiletLabelList(kakaoMap: KakaoMap){
+    fun makeToiletLabelList(kakaoMap: KakaoMap){
         Log.d("test log", "makeToiletLabelList")
         // 카카오맵 객체가 필요하기 때문에 지도 초기화 된 후 사용
         Log.d("test log", "makeToiletLabelList: kakaoMap initialized")
@@ -118,7 +132,7 @@ class NearViewModel: ViewModel() {
     /**
      * 현재 카메라 위치 기반으로 20km 이내의 화장실 레이블 리스트 받아오기
      */
-    suspend fun getToiletLabelListInCamera(kakaoMap: KakaoMap): List<Label>{
+    fun getToiletLabelListInCamera(kakaoMap: KakaoMap): List<Label>{
         val labelBuilder = LabelBuilder(kakaoMap)
         val toiletListInCamera = toiletListGenerator.makeToiletListInCamera(
             cameraPosition.value!!,
@@ -144,15 +158,9 @@ class NearViewModel: ViewModel() {
         )
     }
     /**
-     * 필터링된 화장실 리스트 생성
-     */
-    @RequiresApi(Build.VERSION_CODES.O)
-    fun applyFilter(filterViewModel: FilterViewModel){
-
-    }
-    /**
      * 바텀 시트 UI 데이터 클래스 세팅
      */
+    @SuppressLint("DefaultLocale")
     fun setBottomSheetStatus(label: Label, toilet: ToiletModel){
         // 내 위치와 화장실 위치 사이의 거리 구하기
         val myLocation = Location("").apply{
@@ -179,15 +187,44 @@ class NearViewModel: ViewModel() {
     /**
      * ToiletModel을 받아서 label 반환
      */
-    suspend fun makeLabel(toilet: ToiletModel, kakaoMap: KakaoMap): Label{
+    fun makeLabel(toilet: ToiletModel, kakaoMap: KakaoMap): Label{
         val labelBuilder = LabelBuilder(kakaoMap)
         return labelBuilder.makeToiletLabel(toilet)!!
     }
 
+    fun setFilterDialogStatus(filterDialogStatus: FilterDialogStatus){
+        _filterDialogStatus.value = filterDialogStatus
+        // 바로 필터링 된 화장실 리스트 세팅
+        setFilteredToiletList(getFilteredToiletList())
+    }
+
+    private fun setFilteredToiletList(toiletList: List<ToiletModel>) {
+        _mapState.value = mapState.value?.copy(
+            filteredToiletList = toiletList
+        )
+    }
+
+    @SuppressLint("NewApi")
+    private fun getFilteredToiletList(): List<ToiletModel> {
+        return toiletRepository.setFilteredToiletList(
+            filterDialogStatus.value!!.filterStatus,
+            mapState.value!!.toiletList.toList()
+        )
+    }
+
+    fun setIsDialogDismissed(isDismissed: Boolean){
+        _filterDialogStatus.value = FilterDialogStatus(
+            isDismissed = isDismissed,
+            // 필터 값은 그대로 유지
+            filterStatus = _filterDialogStatus.value!!.filterStatus
+        )
+    }
+
+
 }
 
 data class MapStatus(
-    val toiletList: List<ToiletModel>?,
+    val toiletList: List<ToiletModel>,
     val filteredToiletList: List<ToiletModel>,
     val isToiletListEmpty: Boolean,
     val toiletLabelList: List<Label>,

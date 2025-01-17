@@ -80,7 +80,7 @@
         </LinearLayout>
 
 
-        <Button
+        <android.widget.Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="top"
@@ -93,7 +93,7 @@
             android:textSize="17dp" />
 
         <!-- "확인" 버튼의 높이를 wrap_content로 수정 -->
-        <Button
+        <android.widget.Button
             android:id="@+id/plus_toilet_check_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
