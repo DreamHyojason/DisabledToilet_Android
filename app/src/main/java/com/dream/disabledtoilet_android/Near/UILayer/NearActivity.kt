@@ -1,5 +1,6 @@
 package com.dream.disabledtoilet_android.Near.UILayer
 
+import ShowAddGroupDialog
 import ToiletModel
 import android.Manifest
 import android.content.Intent
@@ -401,32 +402,37 @@ class NearActivity : AppCompatActivity() {
         val saveicon2: ImageView = bottomSheetView.findViewById(R.id.save_icon2)
 
         savebtn1.setOnClickListener {
-            Log.d("test" , " 삭제 : ${postViewModel.toiletLikes.value}")
-
-            val isLiked = postViewModel.isLikedByUser(userId)
-
-            if (isLiked) {
-                postViewModel.removeLike(toiletId, userId)
-                userViewModel.removeLikeUser(toiletId,userId)
-                Log.d("test" , " 삭제 : ${postViewModel.toiletLikes.value}")
-            }else{
-                postViewModel.addLike(toiletId, userId)
-                userViewModel.addLikeUser(toiletId, userId)
-                Log.d("test", " 추가 : ${postViewModel.toiletLikes.value}")
-            }
+            Log.d("test" , " 좋아요 클릭 : ${postViewModel.toiletLikes.value}")
+            
+            showLikeAddDialog()
+//            Log.d("test" , " 삭제 : ${postViewModel.toiletLikes.value}")
+//
+//            val isLiked = postViewModel.isLikedByUser(userId)
+//
+//            if (isLiked) {
+//                postViewModel.removeLike(toiletId, userId)
+//                userViewModel.removeLikeUser(toiletId,userId)
+//                Log.d("test" , " 삭제 : ${postViewModel.toiletLikes.value}")
+//            }else{
+//                postViewModel.addLike(toiletId, userId)
+//                userViewModel.addLikeUser(toiletId, userId)
+//                Log.d("test", " 추가 : ${postViewModel.toiletLikes.value}")
+//            }
         }
 
         savebtn2.setOnClickListener {
-            val isLiked = postViewModel.isLikedByUser(userId)
-            if (isLiked) {
-                postViewModel.removeLike(toiletId, userId)
-                userViewModel.removeLikeUser(toiletId,userId)
-                Log.d("test" , " 삭제 : ${postViewModel.toiletLikes.value}")
-            }else{
-                postViewModel.addLike(toiletId, userId)
-                userViewModel.addLikeUser(toiletId, userId)
-                Log.d("test", " 추가 : ${postViewModel.toiletLikes.value}")
-            }
+            showLikeAddDialog()
+
+//            val isLiked = postViewModel.isLikedByUser(userId)
+//            if (isLiked) {
+//                postViewModel.removeLike(toiletId, userId)
+//                userViewModel.removeLikeUser(toiletId,userId)
+//                Log.d("test" , " 삭제 : ${postViewModel.toiletLikes.value}")
+//            }else{
+//                postViewModel.addLike(toiletId, userId)
+//                userViewModel.addLikeUser(toiletId, userId)
+//                Log.d("test", " 추가 : ${postViewModel.toiletLikes.value}")
+//            }
         }
 
         // 좋아요 실시간 업데이트 관찰
@@ -435,6 +441,15 @@ class NearActivity : AppCompatActivity() {
             likeCountTextView.text = "저장 (${likes.size})"
             updateLikeButtonIcon(saveicon1, saveicon2, userId)
         }
+    }
+
+    /**
+     * 좋아요 버튼 누를 때 -> 그룹 선택 or 추가할 지 창 띄우기
+     */
+    private fun showLikeAddDialog() {
+        //bottomsheet로 fragment_addliked.xml이 보이게
+        val bottomsheetDialog = ShowAddGroupDialog()
+        bottomsheetDialog.show(supportFragmentManager, bottomsheetDialog.tag)
     }
 
     private fun updateLikeButtonIcon(saveBtn1: ImageView, saveBtn2: ImageView, userId: String) {
