@@ -40,8 +40,6 @@ class DetailPageActivity : AppCompatActivity() {
 
         setContentView(binding.root)
 
-
-
         // 뒤로 가기 버튼 설정
         val backButton = binding.backButton
         backButton.setOnClickListener {

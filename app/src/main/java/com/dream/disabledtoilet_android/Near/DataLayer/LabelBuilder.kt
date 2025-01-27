@@ -24,6 +24,7 @@ import com.kakao.vectormap.label.Transition
 class LabelBuilder(val kakaoMap: KakaoMap) {
     private var toiletLabelMap = mutableMapOf<Label, ToiletModel>()
     private val repository = UserRepository()
+    val userToilets = MutableLiveData<User?>()
 
     /**
      *      ToiletModel 리스트를 기반으로 Label 리스트 생성
@@ -32,10 +33,12 @@ class LabelBuilder(val kakaoMap: KakaoMap) {
         val toiletLabelList = mutableListOf<Label>()
         if(toiletList.isNotEmpty()){
             for (i in toiletList.indices){
-                val toiletLabel = makeToiletLabel(toiletList.get(i))
-                if (toiletLabel != null){
-                    toiletLabelList.add(toiletLabel)
-                    toiletLabelMap.put(toiletLabel, toiletList.get(i))
+                if (toiletList[i].restroom_name != ""){
+                    val toiletLabel = makeToiletLabel(toiletList.get(i))
+                    if (toiletLabel != null){
+                        toiletLabelList.add(toiletLabel)
+                        toiletLabelMap.put(toiletLabel, toiletList.get(i))
+                    }
                 }
             }
         }
@@ -58,19 +61,18 @@ class LabelBuilder(val kakaoMap: KakaoMap) {
     /**
      *      맵에 화장실 레이블 생성
      */
-    fun makeToiletLabel(toiletModel: ToiletModel): Label? {
-//        // 사용자 정보를 비동기적으로 가져오기
-//        val user = ToiletData.currentUser?.let {
-//            repository.loadUser(it)
-//        }
-//
-//        // 좋아요 여부 확인
-//        val isLiked = user?.likedToilets?.contains(toiletModel.number.toString())
-//        val isLiked = ToiletData.cachedToiletList.contains(toiletModel)
-        val isLiked = toiletModel.save.contains(ToiletData.currentUser)
+    fun makeToiletLabel(toiletModel: ToiletModel): Label?{
+
+        ToiletData.currentUser?.let {
+            repository.loadUser(it) { user ->
+                userToilets.value = user
+            }
+        }
+
+        val isLiked = userToilets.value?.likedToilets?.contains(toiletModel.number.toString())
 
         // 좋아요 스타일 설정
-        val styles = if (isLiked == true) {
+        val styles = if(isLiked == true) {
             kakaoMap.labelManager?.addLabelStyles(
                 LabelStyles.from(
                     LabelStyle.from(R.drawable.saved_pin1).setZoomLevel(10),
@@ -79,7 +81,7 @@ class LabelBuilder(val kakaoMap: KakaoMap) {
                     LabelStyle.from(R.drawable.saved_pin4).setZoomLevel(19)
                 )
             )
-        } else {
+        }else{
             kakaoMap.labelManager?.addLabelStyles(
                 LabelStyles.from(
                     LabelStyle.from(R.drawable.map_pin1).setZoomLevel(10),
@@ -99,7 +101,6 @@ class LabelBuilder(val kakaoMap: KakaoMap) {
         val label = layer?.addLabel(options)
         return label
     }
-
     /**
      *      toiletLabelMap 초기화
      */
