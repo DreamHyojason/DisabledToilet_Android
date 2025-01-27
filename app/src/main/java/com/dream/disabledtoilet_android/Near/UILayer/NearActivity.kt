@@ -2,13 +2,16 @@ package com.dream.disabledtoilet_android.Near.UILayer
 
 import ToiletModel
 import android.Manifest
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Point
 import android.location.Location
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.view.WindowManager
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -34,8 +37,11 @@ import com.dream.disabledtoilet_android.ToiletSearch.ViewModel.FilterDialogStatu
 import com.dream.disabledtoilet_android.User.ToiletPostViewModel
 import com.dream.disabledtoilet_android.User.UserRepository
 import com.dream.disabledtoilet_android.User.ViewModel.UserViewModel
+import com.dream.disabledtoilet_android.Utility.Dialog.SearchDialog.Listener.SearchDialogListener
+import com.dream.disabledtoilet_android.Utility.Dialog.SearchDialog.SearchDialog
 import com.dream.disabledtoilet_android.Utility.Dialog.dialog.LoadingDialog
 import com.dream.disabledtoilet_android.Utility.Dialog.utils.KakaoShareHelper
+import com.dream.disabledtoilet_android.Utility.KaKaoAPI.Model.SearchResultDocument
 import com.dream.disabledtoilet_android.databinding.ActivityNearBinding
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -92,6 +98,10 @@ class NearActivity : AppCompatActivity() {
         // 조건 적용 버튼
         binding.filterButtonNear.setOnClickListener {
             showFilter()
+        }
+        // 검색
+        binding.searchBar.setOnClickListener {
+            showSearchDialog()
         }
 
         // 맵뷰 초기화
@@ -408,6 +418,28 @@ class NearActivity : AppCompatActivity() {
             }
         )
         filterSearchDialog.show(supportFragmentManager, filterSearchDialog.tag)
+    }
+
+    private fun showSearchDialog() {
+        val windowManager = this.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        val display = windowManager.defaultDisplay
+        val size = Point()
+        display.getSize(size)
+
+        size.x // 디바이스 가로 길이
+        size.y // 디바이스 세로 길이
+
+        val searchDialog = SearchDialog(
+            size.x,
+            size.y,
+            object : SearchDialogListener {
+                override fun addOnSearchResultListener(searchResultDocument: SearchResultDocument) {
+
+                }
+            }
+        )
+
+        searchDialog.show(supportFragmentManager, searchDialog.tag)
     }
 
     override fun onResume() {

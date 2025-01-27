@@ -1,4 +1,5 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -34,7 +35,7 @@
     </FrameLayout>
 
     <!-- Main Layout below the top section -->
-    <FrameLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="10">
@@ -45,8 +46,22 @@
             android:background="@color/greyColor"
             android:layout_height="match_parent" />
 
+        <EditText
+            android:id="@+id/searchBar"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            app:layout_constraintTop_toTopOf="@id/filterButton_near"
+            app:layout_constraintBottom_toBottomOf="@id/filterButton_near"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/filterButton_near"
+            android:background="@drawable/search_bar_background"
+            android:layout_width="0dp"
+            android:layout_height="0dp"/>
+
         <android.widget.Button
             android:id="@+id/filterButton_near"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             android:layout_marginTop="15dp"
             android:layout_marginRight="10dp"
             android:text="조건 적용"
@@ -62,6 +77,8 @@
 
         <ImageButton
             android:id="@+id/map_return_cur_pos_btn"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginRight="20dp"
             android:layout_marginBottom="30dp"
             android:layout_width="80dp"
@@ -72,5 +89,5 @@
             android:src="@drawable/location"
             android:scaleType="fitCenter"
             android:adjustViewBounds="true" />
-    </FrameLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </LinearLayout>
