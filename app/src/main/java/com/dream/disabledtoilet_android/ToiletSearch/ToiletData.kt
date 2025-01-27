@@ -24,11 +24,11 @@ object ToiletData {
 
     var toiletListInit = false
     // 전체 화장실 리스트 (불변)
-    var cachedToiletList: List<ToiletModel>? = listOf()
+    var cachedToiletList: List<ToiletModel> = listOf()
 
     //좋아요가 변동된 화장실 리스트
     // 좋아요가 변동된 화장실 리스트
-    private val _updatedToilets = MutableLiveData<Map<Int, ToiletModel>>(mapOf())
+    val _updatedToilets = MutableLiveData<Map<Int, ToiletModel>>(mapOf())
     val updatedToilets: LiveData<Map<Int, ToiletModel>> get() = _updatedToilets
 
     //사용자
@@ -62,40 +62,6 @@ object ToiletData {
             }
         }
     }
-
-    /**
-     * 화장실 정보 업데이트 : Map {화장실 번호 : save 값}
-     * 키가 이미 존재하면 새로운 값으로 대체
-     */
-//    fun updateToilet(toiletId: Int, isLiked: Boolean) {
-//        val toilet = cachedToiletList?.find { it.number == toiletId }
-//        toilet?.let {
-//            val originSaveValue = it.save.size
-//            val updatedSaveValue = if (isLiked) originSaveValue + 1 else maxOf(0, originSaveValue - 1)
-//
-//            // 기존 Map 복사 후 수정
-//            val currentMap = _updatedToilets.value ?: mapOf()
-//            val updatedMap = currentMap.toMutableMap()
-//
-//            if (updatedMap.containsKey(it.number)) {
-//                // 이미 존재하면 값 업데이트
-//                updatedMap[it.number] = updatedMap
-////                val existingToilet = updatedMap[it.number]!!
-////                existingToilet.save = updatedSaveValue
-////                updatedMap[it.number] = existingToilet
-//            } else {
-//                // 존재하지 않으면 새로 추가
-//                it.save = updatedSaveValue
-//                updatedMap[it.number] = it
-//            }
-//
-//            // LiveData 업데이트
-//            _updatedToilets.value = updatedMap
-//
-//            Log.d(TAG, "Toilet updated: $toiletId, new save count: ${updatedMap[it.number]?.save}")
-//        }
-//    }
-
     /**
      * 특정 화장실의 LiveData 관찰 함수
      */
@@ -109,27 +75,6 @@ object ToiletData {
 
         return specificToiletLiveData
     }
-
-    /**
-     * 업데이트 된 화장실 정보만 Firebase에 업데이트
-     */
-    fun syncToFirebase() {
-        val currentMap = _updatedToilets.value ?: return
-        currentMap.forEach { (_, toilet) ->
-            firestore.collection("dreamhyoja")
-                .document(toilet.number.toString())
-                .update("save", toilet.save)
-                .addOnSuccessListener {
-                    Log.d(TAG, "Save value updated successfully for toilet: ${toilet.number}")
-                }
-                .addOnFailureListener { exception ->
-                    Log.e(TAG, "Error updating save value for toilet: ${exception.message}")
-                }
-        }
-        // 업데이트 완료 후 초기화
-        _updatedToilets.value = mapOf()
-    }
-
 
     fun getToiletAllData() : List<ToiletModel>? {
         return ToiletData.cachedToiletList
