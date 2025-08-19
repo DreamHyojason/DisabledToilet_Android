@@ -1,24 +1,25 @@
 <div align="center">
-  <h1><span style = "color : purple;">방광곡곡</span> : 장애인 화장실 위치 공유 플랫폼</h1>
+  <h1><span style = "color : purple;">🚻 방광곡곡</span> : 장애인 화장실 위치 공유 플랫폼</h1>
   <h3>2024 현대오토에버 배리어프리 앱 개발 콘테스트<br>
     국립교육특수원 원장상(3위)
   </h3>
 
-<img height="400" alt="image" src="https://github.com/user-attachments/assets/6345df5f-85b7-461f-b6fc-293cf3d9075b" />
-
-  <br />
+  <img height="400" alt="image" src="https://github.com/user-attachments/assets/6345df5f-85b7-461f-b6fc-293cf3d9075b" />
 </div>
 
+<br />
 
-<div style="text-align: center;">
-  <h2><a href="https://play.google.com/store/apps/details?id=com.dream.disabledtoilet_android">[🔗 구글 플레이 스토어 Click !]</a> 👈</h2>
-</div>
+<p align="center">
+  <a href="https://play.google.com/store/apps/details?id=com.dream.disabledtoilet_android">
+    [ Click here to Google Play Store! ]
+  </a>
+</p>
 
-> 새 창 열기 방법 : CTRL+click (on Windows and Linux) | CMD+click (on MacOS)
 
 <br />
 
 # 📹 시연 영상
+
 <p align="center">
   <a href="https://youtu.be/OmSAXm5M9uA?si=frCGnA06wgptgNsO">
     <img src="https://img.youtube.com/vi/OmSAXm5M9uA/0.jpg" alt="YouTube Video" />
@@ -26,11 +27,12 @@
 </p>
 
 
+
 <br><br>
 
 # 🛠 기술 스택
 
-<div align="center">
+<p align="center">
   <img src="https://img.shields.io/badge/Kotlin-0095D5?&style=for-the-badge&logo=kotlin&logoColor=white" alt="Kotlin" />
   <img src="https://img.shields.io/badge/Firebase-039BE5?style=for-the-badge&logo=Firebase&logoColor=white" alt="Firebase" />
   <br>
@@ -41,7 +43,7 @@
   <a href="https://www.figma.com/design/upaCysgW7Nx2phiAeRD48A/%EB%B0%A9%EA%B4%91%EA%B3%A1%EA%B3%A1?node-id=1261-218&p=f&t=HO5uRqBZyeAg7IJF-0">
     <b>FIGMA 바로가기</b>
   </a>
-</div>
+</p>
 
 
 
